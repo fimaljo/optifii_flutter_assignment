@@ -8,7 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/price_calculator.dart';
 import '../../../../data/models/models.dart';
-import '../../../../providers/order_provider.dart';
+import '../../../../providers/providers.dart';
 import '../../../../shared/widgets/brand_image.dart';
 import '../../../../shared/widgets/figma_widgets.dart';
 
@@ -33,17 +33,14 @@ class _VoucherDetailsPageState extends State<VoucherDetailsPage> {
     super.dispose();
   }
 
-  Brand? get _brand => context.read<OrderProvider>().getBrand(widget.brandId);
-
   double? get _effectiveAmount {
     if (_selectedAmount != null) return _selectedAmount;
     return double.tryParse(_customController.text.trim());
   }
 
-  double? get _savings {
+  double? _savingsFor(Brand brand) {
     final amount = _effectiveAmount;
-    final brand = _brand;
-    if (amount == null || brand == null) return null;
+    if (amount == null) return null;
     return PriceCalculator.calculate(
       voucherValue: amount * _quantity,
       discountPercent: brand.discountPercent,
@@ -52,7 +49,7 @@ class _VoucherDetailsPageState extends State<VoucherDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final brand = _brand;
+    final brand = context.watch<MarketplaceProvider>().getBrandById(widget.brandId);
     if (brand == null) {
       return DarkScaffold(
         appBar: AppBar(title: const Text('Rewards')),
@@ -67,6 +64,7 @@ class _VoucherDetailsPageState extends State<VoucherDetailsPage> {
             discountPercent: brand.discountPercent,
           ).finalPayable
         : null;
+    final savings = _savingsFor(brand);
 
     return DarkScaffold(
       appBar: AppBar(
@@ -116,9 +114,9 @@ class _VoucherDetailsPageState extends State<VoucherDetailsPage> {
             quantity: _quantity,
             onChanged: (value) => setState(() => _quantity = value),
           ),
-          if (_savings != null && _savings! > 0) ...[
+          if (savings != null && savings > 0) ...[
             const SizedBox(height: 16),
-            Center(child: SavingsChip(amount: _savings!)),
+            Center(child: SavingsChip(amount: savings)),
           ],
           const SizedBox(height: 100),
         ],

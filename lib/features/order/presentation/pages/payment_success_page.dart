@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../shared/widgets/figma_widgets.dart';
-import '../../../../providers/order_provider.dart';
+import '../../../../providers/providers.dart';
 
 class PaymentSuccessPage extends StatelessWidget {
   const PaymentSuccessPage({super.key, required this.orderId});

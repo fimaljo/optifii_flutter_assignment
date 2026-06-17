@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
 import '../../../../core/constants/asset_paths.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../data/models/models.dart';
-import '../../../../data/repositories/voucher_repository.dart';
+import '../../../../providers/providers.dart';
 import '../../../../shared/widgets/brand_image.dart';
 
 /// Horizontal brand card matching Figma Trending / Popular Brands sections.
@@ -191,13 +193,10 @@ class PromoCarousel extends StatefulWidget {
 }
 
 class _PromoCarouselState extends State<PromoCarousel> {
-  static const _repository = VoucherRepository();
   static const _pageCount = 4;
 
   late final PageController _controller = PageController(initialPage: 1);
   int _page = 1;
-
-  List<PromoBanner> get _banners => _repository.getPromoBanners();
 
   @override
   void dispose() {
@@ -207,7 +206,7 @@ class _PromoCarouselState extends State<PromoCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    final banners = _banners;
+    final banners = context.watch<MarketplaceProvider>().promoBanners;
 
     return Column(
       children: [

@@ -1,15 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../core/utils/price_calculator.dart';
-import '../../data/models/models.dart';
-import '../../data/repositories/voucher_repository.dart';
+import '../core/utils/price_calculator.dart';
+import '../data/models/models.dart';
 
+/// Checkout and order lifecycle state. Catalog lookups belong in [MarketplaceProvider].
 class OrderProvider extends ChangeNotifier {
-  OrderProvider({VoucherRepository? repository})
-      : _repository = repository ?? const VoucherRepository();
-
-  final VoucherRepository _repository;
   final _uuid = const Uuid();
 
   CheckoutDraft? _checkoutDraft;
@@ -17,8 +13,6 @@ class OrderProvider extends ChangeNotifier {
 
   CheckoutDraft? get checkoutDraft => _checkoutDraft;
   List<Order> get orders => List.unmodifiable(_orders);
-
-  Brand? getBrand(String id) => _repository.getBrandById(id);
 
   void startCheckout({
     required Brand brand,

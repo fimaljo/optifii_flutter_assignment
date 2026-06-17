@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../data/models/models.dart';
-import '../../../../providers/order_provider.dart';
+import '../../../../providers/providers.dart';
 import '../../../../shared/widgets/brand_image.dart';
 import '../../../../shared/widgets/common_widgets.dart';
 import '../../../../shared/widgets/figma_widgets.dart';
