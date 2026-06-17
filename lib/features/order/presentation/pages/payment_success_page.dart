@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../shared/widgets/figma_widgets.dart';
 import '../../../../providers/order_provider.dart';
 
 class PaymentSuccessPage extends StatelessWidget {
@@ -26,34 +27,34 @@ class PaymentSuccessPage extends StatelessWidget {
       );
     }
 
-    return Scaffold(
+    return DarkScaffold(
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppColors.accentLight,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.check_circle,
-                  color: AppColors.accent,
-                  size: 64,
-                ),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.accentLight,
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 24),
-              Text(
-                'Voucher Purchased!',
-                style: Theme.of(context).textTheme.headlineMedium,
-                textAlign: TextAlign.center,
+              child: const Icon(
+                Icons.check_circle,
+                color: AppColors.accent,
+                size: 64,
               ),
-              const SizedBox(height: 12),
-              Text(
-                'Your ${order.brand.name} voucher worth ${CurrencyFormatter.format(order.voucherValue)} has been purchased successfully.',
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Purchase Successful',
+              style: Theme.of(context).textTheme.headlineMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Yahoo! You have successfully purchased ${order.brand.name} Voucher.',
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),

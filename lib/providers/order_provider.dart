@@ -22,13 +22,15 @@ class OrderProvider extends ChangeNotifier {
 
   void startCheckout({
     required Brand brand,
-    required double voucherValue,
+    required double unitAmount,
     PurchaseMode mode = PurchaseMode.self,
+    int quantity = 1,
   }) {
     _checkoutDraft = CheckoutDraft(
       brand: brand,
-      voucherValue: voucherValue,
+      unitAmount: unitAmount,
       mode: mode,
+      quantity: quantity,
     );
     notifyListeners();
   }

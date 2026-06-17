@@ -5,6 +5,7 @@ import '../../../../data/models/models.dart';
 import '../../../../data/repositories/voucher_repository.dart';
 import '../../../../shared/widgets/app_search_bar.dart';
 import '../../../../shared/widgets/common_widgets.dart';
+import '../../../../shared/widgets/figma_widgets.dart';
 import '../../../../shared/widgets/voucher_card.dart';
 
 class RewardsMarketplacePage extends StatefulWidget {
@@ -23,17 +24,17 @@ class _RewardsMarketplacePageState extends State<RewardsMarketplacePage> {
     final categories = _repository.getCategories();
     final trending = _repository.getTrendingBrands();
     final popular = _repository.getPopularBrands();
-    final filteredBrands = _selectedCategoryId == null
-        ? _repository.getBrands()
-        : _repository.getBrandsByCategory(_selectedCategoryId!);
 
-    return Scaffold(
+    return DarkScaffold(
       appBar: AppBar(
-        title: const Text('Rewards Marketplace'),
+        title: const Text('Rewards'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.receipt_long_outlined),
-            tooltip: 'Order History',
+            icon: const Icon(Icons.search),
+            onPressed: () => context.push('/search'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.menu),
             onPressed: () => context.push('/orders'),
           ),
         ],
@@ -42,141 +43,106 @@ class _RewardsMarketplacePageState extends State<RewardsMarketplacePage> {
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Discover gift vouchers\nfrom top brands',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  const SizedBox(height: 16),
-                  AppSearchBar(
-                    hintText: 'Search brands or categories',
-                    readOnly: true,
-                    onTap: () => context.push('/search'),
-                  ),
-                ],
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: AppSearchBar(
+                hintText: 'Search brands, categories...',
+                readOnly: true,
+                onTap: () => context.push('/search'),
               ),
             ),
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 8),
-              child: Text('Categories', style: Theme.of(context).textTheme.titleMedium),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: 44,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: categories.length + 1,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return FilterChip(
-                      label: const Text('All'),
-                      selected: _selectedCategoryId == null,
-                      onSelected: (_) => setState(() => _selectedCategoryId = null),
-                    );
-                  }
-                  final category = categories[index - 1];
-                  return FilterChip(
-                    label: Text(category.name),
-                    selected: _selectedCategoryId == category.id,
-                    onSelected: (_) =>
-                        setState(() => _selectedCategoryId = category.id),
-                  );
-                },
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: CategoryChipRow(
+                categories: categories,
+                selectedId: _selectedCategoryId,
+                onSelected: (id) => setState(() => _selectedCategoryId = id),
               ),
             ),
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-              child: SectionHeader(title: 'Trending Brands'),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: 130,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: trending.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
-                itemBuilder: (context, index) {
-                  final brand = trending[index];
-                  return TrendingBrandChip(
-                    brand: brand,
-                    onTap: () => _openVoucherDetails(context, brand),
-                  );
-                },
-              ),
+              padding: const EdgeInsets.all(16),
+              child: const HeroPromoBanner(),
             ),
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-              child: SectionHeader(title: 'Popular Brands'),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+              child: SectionHeader(
+                title: 'Trending Brands',
+                actionLabel: 'Explore >',
+                onActionTap: () {},
+              ),
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: SliverGrid(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: 0.85,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final brand = trending[index];
+                  return BrandLogoTile(
+                    brand: brand,
+                    onTap: () => _openVoucher(context, brand),
+                  );
+                },
+                childCount: trending.length.clamp(0, 4),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: GiftPromoCard(
+                onTap: () {
+                  if (trending.isEmpty && popular.isEmpty) return;
+                  final brand = trending.isNotEmpty ? trending.first : popular.first;
+                  _openVoucher(context, brand);
+                },
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+              child: Text('Popular Brands', style: Theme.of(context).textTheme.titleMedium),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
-                childAspectRatio: 0.95,
+                childAspectRatio: 1.1,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final brand = popular[index];
                   return VoucherCard(
                     brand: brand,
-                    onTap: () => _openVoucherDetails(context, brand),
+                    onTap: () => _openVoucher(context, brand),
                   );
                 },
                 childCount: popular.length,
               ),
             ),
           ),
-          if (_selectedCategoryId != null) ...[
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                child: SectionHeader(
-                  title: categories
-                      .firstWhere((c) => c.id == _selectedCategoryId)
-                      .name,
-                ),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-              sliver: SliverList.separated(
-                itemCount: filteredBrands.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final brand = filteredBrands[index];
-                  return VoucherCard(
-                    brand: brand,
-                    compact: true,
-                    onTap: () => _openVoucherDetails(context, brand),
-                  );
-                },
-              ),
-            ),
-          ],
         ],
       ),
     );
   }
 
-  void _openVoucherDetails(BuildContext context, Brand brand) {
+  void _openVoucher(BuildContext context, Brand brand) {
     context.push('/voucher/${brand.id}');
   }
 }

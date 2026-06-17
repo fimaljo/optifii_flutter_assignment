@@ -2,19 +2,19 @@ import '../models/models.dart';
 
 abstract final class StaticData {
   static const categories = <Category>[
-    Category(id: 'food', name: 'Food & Dining', iconName: 'restaurant'),
-    Category(id: 'shopping', name: 'Shopping', iconName: 'shopping_bag'),
+    Category(id: 'quick_commerce', name: 'Quick Commerce', iconName: 'bolt'),
     Category(id: 'entertainment', name: 'Entertainment', iconName: 'movie'),
+    Category(id: 'fashion', name: 'Fashion', iconName: 'checkroom'),
+    Category(id: 'food', name: 'Food & Dining', iconName: 'restaurant'),
     Category(id: 'travel', name: 'Travel', iconName: 'flight'),
     Category(id: 'grocery', name: 'Grocery', iconName: 'local_grocery_store'),
-    Category(id: 'fashion', name: 'Fashion', iconName: 'checkroom'),
   ];
 
   static const brands = <Brand>[
     Brand(
       id: 'flipkart',
       name: 'Flipkart',
-      categoryId: 'shopping',
+      categoryId: 'quick_commerce',
       discountPercent: 8,
       startingPrice: 500,
       validityMonths: 6,
@@ -38,7 +38,7 @@ abstract final class StaticData {
     Brand(
       id: 'amazon',
       name: 'Amazon',
-      categoryId: 'shopping',
+      categoryId: 'quick_commerce',
       discountPercent: 5,
       startingPrice: 500,
       validityMonths: 12,
@@ -174,6 +174,27 @@ abstract final class StaticData {
         'Order via Domino\'s app or website.',
         'At checkout, select Gift Card payment.',
         'Enter card number and PIN.',
+      ],
+    ),
+    Brand(
+      id: 'lifestyle',
+      name: 'Lifestyle',
+      categoryId: 'fashion',
+      discountPercent: 12,
+      startingPrice: 500,
+      validityMonths: 6,
+      isTrending: true,
+      isPopular: true,
+      description: 'Shop fashion, home and beauty at Lifestyle stores across India.',
+      termsAndConditions: [
+        'Valid for 6 months from purchase date.',
+        'Redeemable at Lifestyle stores and online.',
+        'Cannot be exchanged for cash.',
+      ],
+      howToRedeem: [
+        'Visit Lifestyle store or website.',
+        'Select items and proceed to checkout.',
+        'Apply gift voucher code at payment.',
       ],
     ),
   ];

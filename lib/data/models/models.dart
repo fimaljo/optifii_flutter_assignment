@@ -125,17 +125,21 @@ class Order {
 class CheckoutDraft {
   CheckoutDraft({
     required this.brand,
-    required this.voucherValue,
+    required this.unitAmount,
     required this.mode,
+    this.quantity = 1,
     this.giftDetails,
     this.selectedTheme = GiftTheme.classic,
   });
 
   final Brand brand;
-  final double voucherValue;
+  final double unitAmount;
+  int quantity;
   PurchaseMode mode;
   GiftDetails? giftDetails;
   GiftTheme selectedTheme;
+
+  double get voucherValue => unitAmount * quantity;
 
   double get discountPercent => brand.discountPercent;
 

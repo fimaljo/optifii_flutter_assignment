@@ -15,7 +15,7 @@ class OptifiiApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Optifii Rewards',
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
+        theme: AppTheme.dark,
         routerConfig: AppRouter.router,
       ),
     );
