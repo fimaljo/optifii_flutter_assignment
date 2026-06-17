@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../data/models/models.dart';
-import 'brand_avatar.dart';
+import 'brand_image.dart';
 
 class BrandLogoTile extends StatelessWidget {
   const BrandLogoTile({
@@ -18,7 +18,7 @@ class BrandLogoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface,
+      color: AppColors.chipFill,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -26,7 +26,7 @@ class BrandLogoTile extends StatelessWidget {
         child: Ink(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: AppColors.glassBorder),
           ),
           padding: const EdgeInsets.all(8),
           child: Column(

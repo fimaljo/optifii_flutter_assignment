@@ -6,7 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../data/models/models.dart';
 import '../../../../providers/order_provider.dart';
-import '../../../../shared/widgets/brand_avatar.dart';
+import '../../../../shared/widgets/brand_image.dart';
 import '../../../../shared/widgets/common_widgets.dart';
 import '../../../../shared/widgets/figma_widgets.dart';
 
@@ -17,7 +17,7 @@ class OrderSummaryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final draft = context.watch<OrderProvider>().checkoutDraft;
     if (draft == null) {
-      return Scaffold(
+      return DarkScaffold(
         appBar: AppBar(title: const Text('Order Summary')),
         body: const Center(child: Text('No active checkout')),
       );

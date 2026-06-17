@@ -6,7 +6,8 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../data/models/models.dart';
 import '../../../../providers/order_provider.dart';
-import '../../../../shared/widgets/brand_avatar.dart';
+import '../../../../shared/widgets/figma_widgets.dart';
+import '../../../../shared/widgets/brand_image.dart';
 
 class GiftDetailsPage extends StatefulWidget {
   const GiftDetailsPage({super.key});
@@ -36,13 +37,13 @@ class _GiftDetailsPageState extends State<GiftDetailsPage> {
   Widget build(BuildContext context) {
     final draft = context.watch<OrderProvider>().checkoutDraft;
     if (draft == null) {
-      return Scaffold(
+      return DarkScaffold(
         appBar: AppBar(title: const Text('Gift Details')),
         body: const Center(child: Text('No active checkout')),
       );
     }
 
-    return Scaffold(
+    return DarkScaffold(
       appBar: AppBar(title: const Text('Send as Gift')),
       body: Form(
         key: _formKey,

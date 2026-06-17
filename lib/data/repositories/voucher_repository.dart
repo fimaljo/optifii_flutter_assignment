@@ -40,4 +40,6 @@ class VoucherRepository {
         .where((category) => category.name.toLowerCase().contains(normalized))
         .toList();
   }
+
+  List<PromoBanner> getPromoBanners() => StaticData.promoBanners;
 }

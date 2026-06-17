@@ -17,7 +17,7 @@ class PaymentSuccessPage extends StatelessWidget {
     final order = context.watch<OrderProvider>().getOrderById(orderId);
 
     if (order == null) {
-      return Scaffold(
+      return DarkScaffold(
         body: Center(
           child: ElevatedButton(
             onPressed: () => context.go('/'),

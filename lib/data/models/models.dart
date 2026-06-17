@@ -21,6 +21,7 @@ class Brand {
     required this.description,
     required this.termsAndConditions,
     required this.howToRedeem,
+    this.logoAsset,
     this.isTrending = false,
     this.isPopular = false,
   });
@@ -34,8 +35,25 @@ class Brand {
   final String description;
   final List<String> termsAndConditions;
   final List<String> howToRedeem;
+
+  /// Path under `assets/` — e.g. `assets/brands/flipkart.png`
+  final String? logoAsset;
   final bool isTrending;
   final bool isPopular;
+}
+
+class PromoBanner {
+  const PromoBanner({
+    required this.id,
+    required this.imageAsset,
+    this.title,
+    this.subtitle,
+  });
+
+  final String id;
+  final String imageAsset;
+  final String? title;
+  final String? subtitle;
 }
 
 enum PurchaseMode { self, gift }

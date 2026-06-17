@@ -1,3 +1,4 @@
+import '../../core/constants/asset_paths.dart';
 import '../models/models.dart';
 
 abstract final class StaticData {
@@ -5,9 +6,20 @@ abstract final class StaticData {
     Category(id: 'quick_commerce', name: 'Quick Commerce', iconName: 'bolt'),
     Category(id: 'entertainment', name: 'Entertainment', iconName: 'movie'),
     Category(id: 'fashion', name: 'Fashion', iconName: 'checkroom'),
+    Category(id: 'electronics', name: 'Electronics', iconName: 'devices'),
     Category(id: 'food', name: 'Food & Dining', iconName: 'restaurant'),
     Category(id: 'travel', name: 'Travel', iconName: 'flight'),
     Category(id: 'grocery', name: 'Grocery', iconName: 'local_grocery_store'),
+  ];
+
+  /// Home carousel banners — image files live in `assets/banners/`.
+  static const promoBanners = <PromoBanner>[
+    PromoBanner(
+      id: 'makemytrip',
+      imageAsset: 'assets/banners/makemytrip.png',
+      title: 'Up To 1500 OFF',
+      subtitle: 'On First Flight Booking',
+    ),
   ];
 
   static const brands = <Brand>[
@@ -15,7 +27,8 @@ abstract final class StaticData {
       id: 'flipkart',
       name: 'Flipkart',
       categoryId: 'quick_commerce',
-      discountPercent: 8,
+      logoAsset: 'assets/brands/flipkart.png',
+      discountPercent: 6,
       startingPrice: 500,
       validityMonths: 6,
       isTrending: true,
@@ -39,7 +52,8 @@ abstract final class StaticData {
       id: 'amazon',
       name: 'Amazon',
       categoryId: 'quick_commerce',
-      discountPercent: 5,
+      logoAsset: 'assets/brands/amazon.png',
+      discountPercent: 6,
       startingPrice: 500,
       validityMonths: 12,
       isTrending: true,
@@ -62,7 +76,8 @@ abstract final class StaticData {
       id: 'swiggy',
       name: 'Swiggy',
       categoryId: 'food',
-      discountPercent: 10,
+      logoAsset: 'assets/brands/swiggy.png',
+      discountPercent: 6,
       startingPrice: 250,
       validityMonths: 3,
       isTrending: true,
@@ -84,7 +99,7 @@ abstract final class StaticData {
       id: 'zomato',
       name: 'Zomato',
       categoryId: 'food',
-      discountPercent: 12,
+      discountPercent: 6,
       startingPrice: 300,
       validityMonths: 6,
       isPopular: true,
@@ -104,7 +119,8 @@ abstract final class StaticData {
       id: 'myntra',
       name: 'Myntra',
       categoryId: 'fashion',
-      discountPercent: 15,
+      logoAsset: 'assets/brands/myntra.png',
+      discountPercent: 6,
       startingPrice: 500,
       validityMonths: 6,
       isTrending: true,
@@ -123,7 +139,7 @@ abstract final class StaticData {
       id: 'nykaa',
       name: 'Nykaa',
       categoryId: 'fashion',
-      discountPercent: 10,
+      discountPercent: 6,
       startingPrice: 500,
       validityMonths: 6,
       isPopular: true,
@@ -142,9 +158,10 @@ abstract final class StaticData {
       id: 'bigbasket',
       name: 'BigBasket',
       categoryId: 'grocery',
-      discountPercent: 7,
+      discountPercent: 6,
       startingPrice: 500,
       validityMonths: 6,
+      isPopular: true,
       description: 'Grocery and daily essentials delivery with BigBasket vouchers.',
       termsAndConditions: [
         'Valid for 6 months on BigBasket orders.',
@@ -160,10 +177,9 @@ abstract final class StaticData {
       id: 'dominos',
       name: "Domino's",
       categoryId: 'food',
-      discountPercent: 20,
+      discountPercent: 6,
       startingPrice: 200,
       validityMonths: 3,
-      isPopular: true,
       description: "Pizza lovers rejoice — redeem at Domino's outlets and online.",
       termsAndConditions: [
         'Valid for 3 months.',
@@ -180,7 +196,7 @@ abstract final class StaticData {
       id: 'lifestyle',
       name: 'Lifestyle',
       categoryId: 'fashion',
-      discountPercent: 12,
+      discountPercent: 6,
       startingPrice: 500,
       validityMonths: 6,
       isTrending: true,
@@ -198,4 +214,8 @@ abstract final class StaticData {
       ],
     ),
   ];
+
+  /// Resolve logo path: explicit [Brand.logoAsset] or default `assets/brands/{id}.png`.
+  static String logoPathFor(Brand brand) =>
+      brand.logoAsset ?? AppAssets.brandLogo(brand.id);
 }

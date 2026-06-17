@@ -9,7 +9,7 @@ import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/price_calculator.dart';
 import '../../../../data/models/models.dart';
 import '../../../../providers/order_provider.dart';
-import '../../../../shared/widgets/brand_avatar.dart';
+import '../../../../shared/widgets/brand_image.dart';
 import '../../../../shared/widgets/figma_widgets.dart';
 
 class VoucherDetailsPage extends StatefulWidget {
