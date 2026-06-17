@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-import '../../../../data/repositories/voucher_repository.dart';
-import '../../../../shared/widgets/app_search_bar.dart';
-import '../../../../shared/widgets/common_widgets.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../providers/providers.dart';
+import '../../../../shared/widgets/figma_widgets.dart';
 import '../../../../shared/widgets/voucher_card.dart';
 
 class SearchPage extends StatefulWidget {
@@ -14,7 +15,6 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  final _repository = const VoucherRepository();
   final _controller = TextEditingController();
   String _query = '';
 
@@ -26,79 +26,129 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final brands = _repository.searchBrands(_query);
-    final categories = _repository.searchCategories(_query);
+    final marketplace = context.watch<MarketplaceProvider>();
+    final brands = marketplace.searchBrands(_query);
+    final categories = marketplace.searchCategories(_query);
     final hasQuery = _query.trim().isNotEmpty;
     final hasResults = brands.isNotEmpty || categories.isNotEmpty;
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
-        ),
-        title: AppSearchBar(
-          hintText: 'Search brands or categories',
-          controller: _controller,
-          autofocus: true,
-          onChanged: (value) => setState(() => _query = value),
-        ),
-        titleSpacing: 0,
-      ),
-      body: !hasQuery
-          ? const EmptyStateWidget(
-              icon: Icons.search,
-              title: 'Search for brands',
-              subtitle:
-                  'Find gift vouchers from your favourite brands and categories.',
-            )
-          : !hasResults
-              ? EmptyStateWidget(
-                  icon: Icons.search_off,
-                  title: 'No results found',
-                  subtitle: 'Try searching with a different keyword like "food" or "Amazon".',
-                )
-              : ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    if (categories.isNotEmpty) ...[
-                      Text('Categories', style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: categories.map((category) {
-                          return ActionChip(
-                            label: Text(category.name),
-                            onPressed: () {
-                              final brand = _repository
-                                  .getBrandsByCategory(category.id)
-                                  .firstOrNull;
-                              if (brand != null) {
-                                context.push('/voucher/${brand.id}');
-                              }
-                            },
-                          );
-                        }).toList(),
+    return DarkScaffold(
+      safeArea: true,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: FigmaSearchField(
+              controller: _controller,
+              hintText: 'Search Brands',
+              autofocus: true,
+              onBack: () => context.pop(),
+              onChanged: (value) => setState(() => _query = value),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: marketplace.filterCategories.map((category) {
+                return FigmaFilterChip(
+                  label: category.name,
+                  onTap: () {
+                    final brand = marketplace
+                        .getBrandsByCategory(category.id)
+                        .firstOrNull;
+                    if (brand != null) {
+                      context.push('/voucher/${brand.id}');
+                    }
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+          Expanded(
+            child: !hasQuery
+                ? const Center(
+                    child: Text(
+                      'No Search History',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
-                      const SizedBox(height: 24),
-                    ],
-                    if (brands.isNotEmpty) ...[
-                      Text('Brands', style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 12),
-                      ...brands.map(
-                        (brand) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: VoucherCard(
-                            brand: brand,
-                            compact: true,
-                            onTap: () => context.push('/voucher/${brand.id}'),
-                          ),
+                    ),
+                  )
+                : !hasResults
+                    ? Center(
+                        child: Text(
+                          'No results found',
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w500,
+                              ),
                         ),
+                      )
+                    : ListView(
+                        padding: const EdgeInsets.all(16),
+                        children: [
+                          if (categories.isNotEmpty) ...[
+                            ...categories.map((category) {
+                              return ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  'Categories > ${category.name}',
+                                  style: const TextStyle(color: AppColors.textPrimary),
+                                ),
+                                onTap: () {
+                                  final brand = marketplace
+                                      .getBrandsByCategory(category.id)
+                                      .firstOrNull;
+                                  if (brand != null) {
+                                    context.push('/voucher/${brand.id}');
+                                  }
+                                },
+                              );
+                            }),
+                            const SizedBox(height: 8),
+                          ],
+                          if (brands.isNotEmpty) ...[
+                            ...brands.map((brand) {
+                              return ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  'Brands > ${brand.name}',
+                                  style: const TextStyle(color: AppColors.textPrimary),
+                                ),
+                                onTap: () => context.push('/voucher/${brand.id}'),
+                              );
+                            }),
+                            const SizedBox(height: 16),
+                            GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 12,
+                                childAspectRatio: 0.9,
+                              ),
+                              itemCount: brands.length,
+                              itemBuilder: (context, index) {
+                                final brand = brands[index];
+                                return VoucherCard(
+                                  brand: brand,
+                                  onTap: () => context.push('/voucher/${brand.id}'),
+                                );
+                              },
+                            ),
+                          ],
+                        ],
                       ),
-                    ],
-                  ],
-                ),
+          ),
+        ],
+      ),
     );
   }
 }

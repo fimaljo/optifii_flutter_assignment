@@ -10,6 +10,7 @@ import '../../features/order/presentation/pages/payment_success_page.dart';
 import '../../features/order/presentation/pages/post_purchase_page.dart';
 import '../../features/search/presentation/pages/search_page.dart';
 import '../../features/voucher/presentation/pages/voucher_details_page.dart';
+import '../../shared/widgets/figma_widgets.dart';
 
 abstract final class AppRouter {
   static final GoRouter router = GoRouter(
@@ -68,7 +69,7 @@ abstract final class AppRouter {
         },
       ),
     ],
-    errorBuilder: (context, state) => Scaffold(
+    errorBuilder: (context, state) => DarkScaffold(
       body: Center(
         child: Text('Page not found: ${state.uri}'),
       ),

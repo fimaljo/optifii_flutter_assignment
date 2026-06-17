@@ -5,14 +5,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 abstract final class AppTheme {
-  static ThemeData get light {
-    final textTheme = GoogleFonts.interTextTheme();
+  static ThemeData get dark {
+    final base = GoogleFonts.interTextTheme(ThemeData.dark().textTheme);
 
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.light,
-      scaffoldBackgroundColor: AppColors.background,
-      colorScheme: const ColorScheme.light(
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: Colors.transparent,
+      colorScheme: const ColorScheme.dark(
         primary: AppColors.primary,
         onPrimary: Colors.white,
         secondary: AppColors.accent,
@@ -21,56 +21,63 @@ abstract final class AppTheme {
         onSurface: AppColors.textPrimary,
         error: AppColors.error,
       ),
-      textTheme: textTheme.copyWith(
-        headlineLarge: textTheme.headlineLarge?.copyWith(
+      textTheme: base.copyWith(
+        headlineLarge: base.headlineLarge?.copyWith(
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
-          fontSize: 28,
+          fontSize: 26,
         ),
-        headlineMedium: textTheme.headlineMedium?.copyWith(
+        headlineMedium: base.headlineMedium?.copyWith(
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
-          fontSize: 22,
+          fontSize: 20,
         ),
-        titleLarge: textTheme.titleLarge?.copyWith(
+        titleLarge: base.titleLarge?.copyWith(
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
           fontSize: 18,
         ),
-        titleMedium: textTheme.titleMedium?.copyWith(
+        titleMedium: base.titleMedium?.copyWith(
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
           fontSize: 16,
         ),
-        bodyLarge: textTheme.bodyLarge?.copyWith(
+        titleSmall: base.titleSmall?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
+          fontSize: 14,
+        ),
+        bodyLarge: base.bodyLarge?.copyWith(
           color: AppColors.textPrimary,
           fontSize: 16,
         ),
-        bodyMedium: textTheme.bodyMedium?.copyWith(
+        bodyMedium: base.bodyMedium?.copyWith(
           color: AppColors.textSecondary,
           fontSize: 14,
         ),
-        bodySmall: textTheme.bodySmall?.copyWith(
+        bodySmall: base.bodySmall?.copyWith(
           color: AppColors.textTertiary,
           fontSize: 12,
         ),
-        labelLarge: textTheme.labelLarge?.copyWith(
+        labelLarge: base.labelLarge?.copyWith(
           fontWeight: FontWeight.w600,
           fontSize: 14,
+          color: Colors.white,
         ),
       ),
       appBarTheme: AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        backgroundColor: AppColors.surface,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         foregroundColor: AppColors.textPrimary,
         titleTextStyle: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       cardTheme: CardThemeData(
         elevation: 0,
@@ -85,6 +92,7 @@ abstract final class AppTheme {
         filled: true,
         fillColor: AppColors.surface,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        labelStyle: GoogleFonts.inter(color: AppColors.textSecondary),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.border),
@@ -102,7 +110,7 @@ abstract final class AppTheme {
           borderSide: const BorderSide(color: AppColors.error),
         ),
         hintStyle: GoogleFonts.inter(
-          color: AppColors.textTertiary,
+          color: AppColors.textHint,
           fontSize: 14,
         ),
       ),
@@ -116,14 +124,14 @@ abstract final class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           textStyle: GoogleFonts.inter(
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primary,
+          foregroundColor: AppColors.textPrimary,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           side: const BorderSide(color: AppColors.border),
           shape: RoundedRectangleBorder(
@@ -137,8 +145,12 @@ abstract final class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.surface,
-        selectedColor: AppColors.primaryLight,
-        labelStyle: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w500),
+        selectedColor: AppColors.surfaceElevated,
+        labelStyle: GoogleFonts.inter(
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          color: AppColors.textPrimary,
+        ),
         side: const BorderSide(color: AppColors.border),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -148,6 +160,7 @@ abstract final class AppTheme {
         thickness: 1,
         space: 1,
       ),
+      iconTheme: const IconThemeData(color: AppColors.textPrimary),
     );
   }
 }

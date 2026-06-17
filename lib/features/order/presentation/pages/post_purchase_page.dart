@@ -6,8 +6,9 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../data/models/models.dart';
-import '../../../../providers/order_provider.dart';
-import '../../../../shared/widgets/brand_avatar.dart';
+import '../../../../providers/providers.dart';
+import '../../../../shared/widgets/figma_widgets.dart';
+import '../../../../shared/widgets/brand_image.dart';
 
 class PostPurchasePage extends StatelessWidget {
   const PostPurchasePage({super.key, required this.orderId});
@@ -19,13 +20,13 @@ class PostPurchasePage extends StatelessWidget {
     final order = context.watch<OrderProvider>().getOrderById(orderId);
 
     if (order == null) {
-      return Scaffold(
+      return DarkScaffold(
         appBar: AppBar(title: const Text('Voucher Details')),
         body: const Center(child: Text('Order not found')),
       );
     }
 
-    return Scaffold(
+    return DarkScaffold(
       appBar: AppBar(
         title: const Text('Voucher Details'),
         actions: [

@@ -6,10 +6,11 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../core/utils/price_calculator.dart';
 import '../../../../data/models/models.dart';
-import '../../../../providers/order_provider.dart';
-import '../../../../shared/widgets/brand_avatar.dart';
-import '../../../../shared/widgets/common_widgets.dart';
+import '../../../../providers/providers.dart';
+import '../../../../shared/widgets/brand_image.dart';
+import '../../../../shared/widgets/figma_widgets.dart';
 
 class VoucherDetailsPage extends StatefulWidget {
   const VoucherDetailsPage({super.key, required this.brandId});
@@ -23,7 +24,7 @@ class VoucherDetailsPage extends StatefulWidget {
 class _VoucherDetailsPageState extends State<VoucherDetailsPage> {
   double? _selectedAmount;
   final _customController = TextEditingController();
-  PurchaseMode _mode = PurchaseMode.self;
+  int _quantity = 1;
   String? _amountError;
 
   @override
@@ -32,52 +33,64 @@ class _VoucherDetailsPageState extends State<VoucherDetailsPage> {
     super.dispose();
   }
 
-  Brand? get _brand => context.read<OrderProvider>().getBrand(widget.brandId);
-
   double? get _effectiveAmount {
     if (_selectedAmount != null) return _selectedAmount;
-    final custom = double.tryParse(_customController.text.trim());
-    return custom;
+    return double.tryParse(_customController.text.trim());
+  }
+
+  double? _savingsFor(Brand brand) {
+    final amount = _effectiveAmount;
+    if (amount == null) return null;
+    return PriceCalculator.calculate(
+      voucherValue: amount * _quantity,
+      discountPercent: brand.discountPercent,
+    ).savings;
   }
 
   @override
   Widget build(BuildContext context) {
-    final brand = _brand;
+    final brand = context.watch<MarketplaceProvider>().getBrandById(widget.brandId);
     if (brand == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Voucher Details')),
+      return DarkScaffold(
+        appBar: AppBar(title: const Text('Rewards')),
         body: const Center(child: Text('Brand not found')),
       );
     }
 
     final amount = _effectiveAmount;
+    final totalPayable = amount != null
+        ? PriceCalculator.calculate(
+            voucherValue: amount * _quantity,
+            discountPercent: brand.discountPercent,
+          ).finalPayable
+        : null;
+    final savings = _savingsFor(brand);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Voucher Details')),
+    return DarkScaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: const Text('Rewards'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           _BrandHeader(brand: brand),
           const SizedBox(height: 24),
-          Text('Select amount', style: Theme.of(context).textTheme.titleMedium),
+          Text('Select Denomination', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 12),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: AppConstants.predefinedDenominations.map((value) {
-              final selected = _selectedAmount == value.toDouble();
-              return ChoiceChip(
-                label: Text(CurrencyFormatter.format(value)),
-                selected: selected,
-                onSelected: (_) {
-                  setState(() {
-                    _selectedAmount = value.toDouble();
-                    _customController.clear();
-                    _amountError = null;
-                  });
-                },
-              );
-            }).toList(),
+          DenominationGrid(
+            amounts: AppConstants.predefinedDenominations,
+            selectedAmount: _selectedAmount,
+            onSelected: (value) {
+              setState(() {
+                _selectedAmount = value;
+                _customController.clear();
+                _amountError = null;
+              });
+            },
           ),
           const SizedBox(height: 16),
           TextField(
@@ -85,8 +98,7 @@ class _VoucherDetailsPageState extends State<VoucherDetailsPage> {
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: InputDecoration(
-              labelText: 'Custom amount',
-              hintText: 'Min ${CurrencyFormatter.format(AppConstants.minVoucherAmount)} · Max ${CurrencyFormatter.format(AppConstants.maxVoucherAmount)}',
+              hintText: 'Enter any amount',
               errorText: _amountError,
               prefixText: '₹ ',
             ),
@@ -98,32 +110,13 @@ class _VoucherDetailsPageState extends State<VoucherDetailsPage> {
             },
           ),
           const SizedBox(height: 24),
-          Text('Purchase for', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 12),
-          SegmentedButton<PurchaseMode>(
-            segments: const [
-              ButtonSegment(
-                value: PurchaseMode.self,
-                label: Text('Buy for self'),
-                icon: Icon(Icons.person_outline),
-              ),
-              ButtonSegment(
-                value: PurchaseMode.gift,
-                label: Text('Send as gift'),
-                icon: Icon(Icons.card_giftcard_outlined),
-              ),
-            ],
-            selected: {_mode},
-            onSelectionChanged: (selection) {
-              setState(() => _mode = selection.first);
-            },
+          QuantityStepper(
+            quantity: _quantity,
+            onChanged: (value) => setState(() => _quantity = value),
           ),
-          if (amount != null && amount >= AppConstants.minVoucherAmount) ...[
-            const SizedBox(height: 24),
-            PriceSummaryCard(
-              voucherValue: amount,
-              discountPercent: brand.discountPercent,
-            ),
+          if (savings != null && savings > 0) ...[
+            const SizedBox(height: 16),
+            Center(child: SavingsChip(amount: savings)),
           ],
           const SizedBox(height: 100),
         ],
@@ -131,16 +124,42 @@ class _VoucherDetailsPageState extends State<VoucherDetailsPage> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: ElevatedButton(
-            onPressed: () => _proceed(brand),
-            child: Text(_mode == PurchaseMode.gift ? 'Continue to Gift' : 'Proceed to Summary'),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: amount != null
+                          ? () => _proceed(brand, PurchaseMode.self)
+                          : null,
+                      child: Text(
+                        totalPayable != null
+                            ? 'Buy Now · ${CurrencyFormatter.format(totalPayable)}'
+                            : 'Buy Now',
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: amount != null
+                          ? () => _proceed(brand, PurchaseMode.gift)
+                          : null,
+                      child: const Text('Send a Gift'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  void _proceed(Brand brand) {
+  void _proceed(Brand brand, PurchaseMode mode) {
     final amount = _effectiveAmount;
     if (amount == null) {
       setState(() => _amountError = 'Please select or enter an amount');
@@ -155,10 +174,14 @@ class _VoucherDetailsPageState extends State<VoucherDetailsPage> {
       return;
     }
 
-    final provider = context.read<OrderProvider>();
-    provider.startCheckout(brand: brand, voucherValue: amount, mode: _mode);
+    context.read<OrderProvider>().startCheckout(
+          brand: brand,
+          unitAmount: amount,
+          mode: mode,
+          quantity: _quantity,
+        );
 
-    if (_mode == PurchaseMode.gift) {
+    if (mode == PurchaseMode.gift) {
       context.push('/gift-details');
     } else {
       context.push('/order-summary');
@@ -174,36 +197,33 @@ class _BrandHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.border),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              BrandAvatar(brand: brand, size: 56),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(brand.name, style: Theme.of(context).textTheme.titleLarge),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${brand.discountPercent.toStringAsFixed(0)}% discount · ${brand.validityMonths} months validity',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
+          BrandAvatar(brand: brand, size: 56),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${brand.name} Voucher',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-              ),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  'Validity: ${brand.validityMonths} months',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 16),
-          Text(brand.description, style: Theme.of(context).textTheme.bodyMedium),
+          CashbackBadge(percent: brand.discountPercent),
         ],
       ),
     );

@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
-import '../../../../providers/order_provider.dart';
+import '../../../../providers/providers.dart';
+import '../../../../shared/widgets/figma_widgets.dart';
 import '../../../../shared/widgets/common_widgets.dart';
 
 class PaymentPage extends StatefulWidget {
@@ -21,13 +22,13 @@ class _PaymentPageState extends State<PaymentPage> {
   Widget build(BuildContext context) {
     final draft = context.watch<OrderProvider>().checkoutDraft;
     if (draft == null) {
-      return Scaffold(
+      return DarkScaffold(
         appBar: AppBar(title: const Text('Payment')),
         body: const Center(child: Text('No active checkout')),
       );
     }
 
-    return Scaffold(
+    return DarkScaffold(
       appBar: AppBar(title: const Text('Payment')),
       body: ListView(
         padding: const EdgeInsets.all(16),

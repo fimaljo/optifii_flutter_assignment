@@ -5,9 +5,10 @@ import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../data/models/models.dart';
-import '../../../../providers/order_provider.dart';
-import '../../../../shared/widgets/brand_avatar.dart';
+import '../../../../providers/providers.dart';
+import '../../../../shared/widgets/brand_image.dart';
 import '../../../../shared/widgets/common_widgets.dart';
+import '../../../../shared/widgets/figma_widgets.dart';
 
 class OrderSummaryPage extends StatelessWidget {
   const OrderSummaryPage({super.key});
@@ -16,13 +17,13 @@ class OrderSummaryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final draft = context.watch<OrderProvider>().checkoutDraft;
     if (draft == null) {
-      return Scaffold(
+      return DarkScaffold(
         appBar: AppBar(title: const Text('Order Summary')),
         body: const Center(child: Text('No active checkout')),
       );
     }
 
-    return Scaffold(
+    return DarkScaffold(
       appBar: AppBar(title: const Text('Order Summary')),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -78,8 +79,8 @@ class _OrderItemCard extends StatelessWidget {
                 Text(draft.brand.name, style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 4),
                 Text(
-                  'Voucher value: ${CurrencyFormatter.format(draft.voucherValue)}',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  'Qty: ${draft.quantity} · ${CurrencyFormatter.format(draft.unitAmount)} each',
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 Text(
                   draft.mode == PurchaseMode.gift ? 'Send as gift' : 'Buy for self',
