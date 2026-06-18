@@ -120,7 +120,7 @@ class _PromoBannerSlide extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) {
+          errorBuilder: (_, _, _) {
             return _MakeMyTripFallback(
               title: banner.title,
               subtitle: banner.subtitle,
@@ -263,7 +263,7 @@ class _PromoCarouselState extends State<PromoCarousel> {
                   shape: BoxShape.circle,
                   color: active
                       ? Colors.white
-                      : Colors.white.withOpacity(0.35),
+                      : Colors.white.withValues(alpha: 0.5),
                 ),
               );
             },
@@ -560,7 +560,7 @@ class HorizontalBrandList extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: brands.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final brand = brands[index];
           return BrandHorizontalCard(

@@ -32,7 +32,11 @@ class BrandLogoTile extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              BrandAvatar(brand: brand, size: 36, fontSize: 16),
+              BrandAvatar(
+                brand: brand,
+                size: 36,
+                fontSize: 16,
+              ),
               const SizedBox(height: 6),
               Text(
                 brand.name,
@@ -50,7 +54,6 @@ class BrandLogoTile extends StatelessWidget {
     );
   }
 }
-
 class VoucherCard extends StatelessWidget {
   const VoucherCard({
     super.key,
@@ -66,19 +69,24 @@ class VoucherCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(16),
+      color: const Color(0xFF140726),
+      borderRadius: BorderRadius.circular(18),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         child: Ink(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            color: const Color(0xFF140726),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.08),
+            ),
           ),
           child: Padding(
-            padding: EdgeInsets.all(compact ? 12 : 16),
-            child: compact ? _buildCompact(context) : _buildFull(context),
+            padding: const EdgeInsets.all(8),
+            child: compact
+                ? _buildCompact(context)
+                : _buildFull(context),
           ),
         ),
       ),
@@ -88,13 +96,19 @@ class VoucherCard extends StatelessWidget {
   Widget _buildCompact(BuildContext context) {
     return Row(
       children: [
-        BrandAvatar(brand: brand, size: 44),
+        BrandAvatar(
+          brand: brand,
+          size: 44,
+        ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(brand.name, style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                brand.name,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: 4),
               Text(
                 'From ${CurrencyFormatter.format(brand.startingPrice)}',
@@ -103,7 +117,9 @@ class VoucherCard extends StatelessWidget {
             ],
           ),
         ),
-        _DiscountBadge(discount: brand.discountPercent),
+        _DiscountBadge(
+          discount: brand.discountPercent,
+        ),
       ],
     );
   }
@@ -112,19 +128,59 @@ class VoucherCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Center(child: BrandAvatar(brand: brand, size: 52)),
-        const SizedBox(height: 12),
+        Expanded(
+          flex: 7,
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: brand.brandColor,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            alignment: Alignment.center,
+            child: FractionallySizedBox(
+              widthFactor: .45,
+              heightFactor: .45,
+              child: BrandImage(
+                brand: brand,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
         Text(
           brand.name,
-          style: Theme.of(context).textTheme.titleMedium,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        const SizedBox(height: 4),
+
+        const SizedBox(height: 2),
+
         Text(
           '${brand.discountPercent.toStringAsFixed(0)}% off',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.accent,
-                fontWeight: FontWeight.w600,
-              ),
+          style: const TextStyle(
+            color: AppColors.discountGreen,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+
+        const SizedBox(height: 2),
+
+        Align(
+          alignment: Alignment.centerRight,
+          child: Icon(
+            Icons.chevron_right,
+            size: 18,
+            color: Colors.white.withValues(alpha: 0.7),
+          ),
         ),
       ],
     );
@@ -132,14 +188,19 @@ class VoucherCard extends StatelessWidget {
 }
 
 class _DiscountBadge extends StatelessWidget {
-  const _DiscountBadge({required this.discount});
+  const _DiscountBadge({
+    required this.discount,
+  });
 
   final double discount;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 6,
+      ),
       decoration: BoxDecoration(
         color: AppColors.accentLight,
         borderRadius: BorderRadius.circular(20),

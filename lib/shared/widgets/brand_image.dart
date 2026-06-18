@@ -105,14 +105,14 @@ class _AssetImageWithFallback extends StatelessWidget {
       height: height,
       fit: fit,
       gaplessPlayback: true,
-      errorBuilder: (_, __, ___) {
+      errorBuilder: (_, _, _) {
         if (assetPath.endsWith('.png')) {
           return Image.asset(
             assetPath.replaceAll('.png', '.jpg'),
             width: width,
             height: height,
             fit: fit,
-            errorBuilder: (_, __, ___) => fallback,
+            errorBuilder: (_, _, _) => fallback,
           );
         }
 
