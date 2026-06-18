@@ -100,7 +100,7 @@ class _GiftDetailsPageState extends State<GiftDetailsPage> {
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 itemCount: GiftTheme.values.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                separatorBuilder: (_, _) => const SizedBox(width: 12),
                 itemBuilder: (context, index) {
                   final theme = GiftTheme.values[index];
                   final selected = _selectedTheme == theme;
