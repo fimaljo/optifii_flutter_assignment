@@ -453,8 +453,8 @@ class RewardsHomeHeader extends StatelessWidget {
             'Rewards',
             style: TextStyle(
               color: AppColors.textPrimary,
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
+              fontSize: 22,
+              fontWeight: FontWeight.w400,
             ),
           ),
           const Spacer(),
