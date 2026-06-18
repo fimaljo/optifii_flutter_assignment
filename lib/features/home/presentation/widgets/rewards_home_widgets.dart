@@ -23,53 +23,59 @@ class BrandHorizontalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = AppColors.brandColors[brand.id] ?? AppColors.primary;
-
-    return SizedBox(
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: AppColors.brandCardBackground,
+        border: Border.all(color: AppColors.glassBorder.withValues(alpha: 0.2)),
+      ),
       width: width,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Ink(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.glassBorder),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                BrandImage(
-                  brand: brand,
-                  height: 100,
-                  width: width,
-                  fit: BoxFit.cover,
-                  backgroundColor: brand.logoAsset != null ? null : bgColor,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.glassBorder.withValues(alpha: 0.2)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              BrandImage(
+                brand: brand,
+                height: 100,
+                width: width,
+                fit: BoxFit.cover,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(15),
                 ),
-                Container(
+              ),
+              Flexible(
+                child: Container(
                   padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
                   decoration: const BoxDecoration(
-                    color: AppColors.cardFooter,
-                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+                    color: AppColors.brandCardBackground,
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(15),
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        brand.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.textPrimary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text(
+                            brand.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          //  / const SizedBox(height: 4),
                           Text(
                             '${brand.discountPercent.toStringAsFixed(0)}% off',
                             style: const TextStyle(
@@ -78,43 +84,48 @@ class BrandHorizontalCard extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const Spacer(),
-                          const Icon(
-                            Icons.chevron_right,
-                            color: AppColors.textSecondary,
-                            size: 18,
-                          ),
                         ],
+                      ),
+                      const Icon(
+                        Icons.chevron_right,
+                        color: AppColors.textSecondary,
+                        size: 18,
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
-
+/// MakeMyTrip-style promo banner slide.
 class _PromoBannerSlide extends StatelessWidget {
-  const _PromoBannerSlide({required this.banner});
+  const _PromoBannerSlide({
+    required this.banner,
+  });
 
   final PromoBanner banner;
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: AppAssetImage(
-        assetPath: banner.imageAsset,
-        height: 156,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        fallback: _MakeMyTripFallback(
-          title: banner.title,
-          subtitle: banner.subtitle,
+      borderRadius: BorderRadius.circular(20),
+      child: SizedBox.expand(
+        child: Image.asset(
+          banner.imageAsset,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) {
+            return _MakeMyTripFallback(
+              title: banner.title,
+              subtitle: banner.subtitle,
+            );
+          },
         ),
       ),
     );
@@ -183,8 +194,6 @@ class _MakeMyTripFallback extends StatelessWidget {
     );
   }
 }
-
-/// MakeMyTrip-style promo carousel with page dots.
 class PromoCarousel extends StatefulWidget {
   const PromoCarousel({super.key});
 
@@ -195,8 +204,8 @@ class PromoCarousel extends StatefulWidget {
 class _PromoCarouselState extends State<PromoCarousel> {
   static const _pageCount = 4;
 
-  late final PageController _controller = PageController(initialPage: 1);
-  int _page = 1;
+  late final PageController _controller = PageController();
+  int _page = 0;
 
   @override
   void dispose() {
@@ -211,36 +220,54 @@ class _PromoCarouselState extends State<PromoCarousel> {
     return Column(
       children: [
         SizedBox(
-          height: 156,
+          width: double.infinity,
+          height: 180,
           child: PageView.builder(
             controller: _controller,
-            onPageChanged: (i) => setState(() => _page = i),
             itemCount: _pageCount,
+            onPageChanged: (index) {
+              setState(() {
+                _page = index;
+              });
+            },
             itemBuilder: (context, index) {
               if (banners.isEmpty) {
                 return const _MakeMyTripFallback();
               }
-              return _PromoBannerSlide(banner: banners[index % banners.length]);
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: _PromoBannerSlide(
+                  banner: banners[index % banners.length],
+                ),
+              );
             },
           ),
         ),
+
         const SizedBox(height: 12),
+
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(_pageCount, (i) {
-            final active = i == _page;
-            return Container(
-              width: active ? 8 : 6,
-              height: active ? 8 : 6,
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: active
-                    ? AppColors.textPrimary
-                    : AppColors.textPrimary.withValues(alpha: 0.35),
-              ),
-            );
-          }),
+          children: List.generate(
+            _pageCount,
+            (index) {
+              final active = _page == index;
+
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: active ? 8 : 6,
+                height: active ? 8 : 6,
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: active
+                      ? Colors.white
+                      : Colors.white.withOpacity(0.35),
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
@@ -256,140 +283,118 @@ class OptifiiGiftBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 160,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [AppColors.optifiiPurpleDark, AppColors.optifiiPurple],
-        ),
-      ),
+      height: 240,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(24)),
       clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
+          /// Background image
           Positioned.fill(
-            child: DecoratedBox(
+            child: Image.asset(
+              AppAssets.promo('optifii_banner_bg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          /// Optional dark overlay
+          Positioned.fill(
+            child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
                   colors: [
-                    Colors.white.withValues(alpha: 0.06),
+                    Colors.black.withValues(alpha: .12),
                     Colors.transparent,
                   ],
                 ),
               ),
             ),
           ),
+
+          /// Content
           Padding(
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.fromLTRB(24, 22, 24, 22),
             child: Row(
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'OptiFii',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                  child: SizedBox(
+                    height: double.infinity,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        /// Logo
+                        Image.asset(
+                          AppAssets.promo('optifii_logo_white'),
+                          height: 26,
                         ),
-                      ),
-                      const SizedBox(height: 10),
-                      RichText(
-                        text: const TextSpan(
+
+                        const Spacer(),
+
+                        const Text(
+                          'Make Every Gift',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 14,
-                            height: 1.3,
+                            fontSize: 16,
+                            height: 1,
+                            fontWeight: FontWeight.w300,
                           ),
-                          children: [
-                            TextSpan(text: 'Make Every Gift\n'),
-                            TextSpan(
-                              text: 'Feel Special',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ],
                         ),
-                      ),
-                      const Spacer(),
-                      Material(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        child: InkWell(
+
+                        const SizedBox(height: 4),
+
+                        const Text(
+                          'Feel Special',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            height: 1,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        InkWell(
                           onTap: onTap,
-                          borderRadius: BorderRadius.circular(20),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                            child: Text(
+                          borderRadius: BorderRadius.circular(30),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 28,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: const Text(
                               'Explore now',
                               style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 13,
+                                color: Color(0xff1F1F1F),
+                                fontSize: 15,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                AppAssetImage(
-                  assetPath: AppAssets.promo('optifii_gift'),
-                  width: 90,
-                  height: 130,
-                  fit: BoxFit.contain,
-                  fallback: _PhoneMockup(),
-                ),
+
+                const SizedBox(width: 10),
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
 
-class _PhoneMockup extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 90,
-      height: 130,
-      decoration: BoxDecoration(
-        color: const Color(0xFF1A1A2E),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white24),
-      ),
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: AppColors.optifiiPurple.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Text(
-              'Hey Tanish,\nVinay Sent\nyou a gift.',
-              style: TextStyle(color: Colors.white, fontSize: 7, height: 1.3),
-            ),
-          ),
-          const Spacer(),
-          Container(
-            height: 36,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.pink, AppColors.optifiiPurple],
-              ),
-              borderRadius: BorderRadius.circular(6),
+          /// Phone Mockup
+          Positioned(
+            right: -10,
+            top: 10,
+            bottom: 0,
+            child: Image.asset(
+              AppAssets.promo('optifii_phone_mockup'),
+              fit: BoxFit.contain,
             ),
           ),
         ],
@@ -399,11 +404,7 @@ class _PhoneMockup extends StatelessWidget {
 }
 
 class RewardsSectionHeader extends StatelessWidget {
-  const RewardsSectionHeader({
-    super.key,
-    required this.title,
-    this.onExplore,
-  });
+  const RewardsSectionHeader({super.key, required this.title, this.onExplore});
 
   final String title;
   final VoidCallback? onExplore;
@@ -555,7 +556,7 @@ class HorizontalBrandList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 168,
+      height: 180,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),

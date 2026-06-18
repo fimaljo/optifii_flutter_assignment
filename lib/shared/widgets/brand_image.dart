@@ -4,10 +4,6 @@ import '../../core/constants/asset_paths.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/models/models.dart';
 
-/// Loads a brand logo from assets, with automatic letter fallback if the file is missing.
-///
-/// Add your image here: `assets/brands/{brand.id}.png`
-/// Example: `assets/brands/flipkart.png`
 class BrandImage extends StatelessWidget {
   const BrandImage({
     super.key,
@@ -16,66 +12,55 @@ class BrandImage extends StatelessWidget {
     this.height,
     this.size,
     this.fit = BoxFit.contain,
-    this.backgroundColor,
     this.borderRadius,
-    this.padding = EdgeInsets.zero,
   });
 
   final Brand brand;
   final double? width;
   final double? height;
-
-  /// Shorthand — sets width & height together.
   final double? size;
   final BoxFit fit;
-  final Color? backgroundColor;
+  
   final BorderRadius? borderRadius;
-  final EdgeInsets padding;
+@override
+Widget build(BuildContext context) {
+  final w = size ?? width ?? 48;
+  final h = size ?? height ?? 48;
 
-  @override
-  Widget build(BuildContext context) {
-    final w = size ?? width;
-    final h = size ?? height;
-    final hasAsset = brand.logoAsset != null;
-    final bg = hasAsset
-        ? Colors.transparent
-        : (backgroundColor ?? AppColors.brandColors[brand.id] ?? AppColors.primary);
-    final radius = borderRadius ?? BorderRadius.circular((w ?? h ?? 48) * 0.2);
-    final assetPath = brand.logoAsset ?? AppAssets.brandLogo(brand.id);
-    final imageFit = hasAsset && (w != null || h != null) ? BoxFit.cover : fit;
+ 
 
-    return ClipRRect(
-      borderRadius: radius,
-      child: Container(
-        width: w,
-        height: h,
-        color: bg,
-        padding: hasAsset ? EdgeInsets.zero : padding,
-        alignment: Alignment.center,
-        child: _AssetImageWithFallback(
-          assetPath: assetPath,
-          width: w,
-          height: h,
-          fit: imageFit,
-          fallback: BrandAvatarFallback(
-            brand: brand,
-            size: w ?? h ?? 48,
-            onColoredBackground: hasAsset,
-          ),
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Container(
+      width: w,
+      height: h,
+      
+      decoration: BoxDecoration(
+        color:brand.brandColor,
+        borderRadius:
+          BorderRadius.circular( 10),
+      ),
+      padding: EdgeInsets.all(w * 0.18),
+      alignment: Alignment.center,
+      child: _AssetImageWithFallback(
+        assetPath: brand.logoAsset ?? AppAssets.brandLogo(brand.id),
+        fit: BoxFit.contain,
+        fallback: BrandAvatarFallback(
+          brand: brand,
+          size: w,
         ),
       ),
-    );
-  }
-}
-
-/// Generic asset image — shows [fallback] when file is not found.
+    ),
+  );
+}}
+/// Generic asset image with fallback.
 class AppAssetImage extends StatelessWidget {
   const AppAssetImage({
     super.key,
     required this.assetPath,
     this.width,
     this.height,
-    this.fit = BoxFit.cover,
+    this.fit = BoxFit.contain,
     required this.fallback,
   });
 
@@ -121,7 +106,6 @@ class _AssetImageWithFallback extends StatelessWidget {
       fit: fit,
       gaplessPlayback: true,
       errorBuilder: (_, __, ___) {
-        // Try .jpg if .png missing
         if (assetPath.endsWith('.png')) {
           return Image.asset(
             assetPath.replaceAll('.png', '.jpg'),
@@ -131,26 +115,25 @@ class _AssetImageWithFallback extends StatelessWidget {
             errorBuilder: (_, __, ___) => fallback,
           );
         }
+
         return fallback;
       },
     );
   }
 }
 
-/// Letter-based fallback when no image file exists.
+/// Letter fallback when no logo image exists.
 class BrandAvatarFallback extends StatelessWidget {
   const BrandAvatarFallback({
     super.key,
     required this.brand,
     this.size = 48,
     this.fontSize,
-    this.onColoredBackground = false,
   });
 
   final Brand brand;
   final double size;
   final double? fontSize;
-  final bool onColoredBackground;
 
   @override
   Widget build(BuildContext context) {
@@ -165,18 +148,6 @@ class BrandAvatarFallback extends StatelessWidget {
       'lifestyle' => 'lifestyle',
       _ => brand.name.characters.first.toUpperCase(),
     };
-
-    if (onColoredBackground) {
-      return Text(
-        mark,
-        style: TextStyle(
-          color: logoColor,
-          fontSize: fontSize ?? (brand.id == 'lifestyle' ? 22 : 36),
-          fontWeight: FontWeight.w800,
-          fontStyle: brand.id == 'lifestyle' ? FontStyle.italic : FontStyle.normal,
-        ),
-      );
-    }
 
     return Container(
       width: size,
@@ -198,7 +169,7 @@ class BrandAvatarFallback extends StatelessWidget {
   }
 }
 
-/// Backwards-compatible alias — now loads image if available.
+/// Backwards-compatible alias.
 class BrandAvatar extends StatelessWidget {
   const BrandAvatar({
     super.key,
@@ -216,8 +187,6 @@ class BrandAvatar extends StatelessWidget {
     return BrandImage(
       brand: brand,
       size: size,
-      padding: const EdgeInsets.all(6),
-      backgroundColor: AppColors.brandColors[brand.id]?.withValues(alpha: 0.15),
     );
   }
 }

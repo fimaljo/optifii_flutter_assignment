@@ -39,7 +39,7 @@ class _SearchPageState extends State<SearchPage> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: FigmaSearchField(
+            child: SearchFieldWidget(
               controller: _controller,
               hintText: 'Search Brands',
               autofocus: true,
@@ -53,7 +53,7 @@ class _SearchPageState extends State<SearchPage> {
               spacing: 10,
               runSpacing: 10,
               children: marketplace.filterCategories.map((category) {
-                return FigmaFilterChip(
+                return FilterChipWidget(
                   label: category.name,
                   onTap: () {
                     final brand = marketplace

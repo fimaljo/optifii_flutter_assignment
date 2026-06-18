@@ -23,7 +23,7 @@ abstract final class AppColors {
   static const primary = Color(0xFF7C3AED);
   static const primaryDark = Color(0xFF5E17EB);
   static const link = Color(0xFFC4B5FD);
-
+static const brandCardBackground = Color.fromARGB(142, 20, 7, 38);
   static const discountGreen = Color(0xFF4ADE80);
   static const accent = discountGreen;
   static const accentLight = Color(0x334ADE80);
