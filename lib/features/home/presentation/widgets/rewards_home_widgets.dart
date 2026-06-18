@@ -496,7 +496,7 @@ class HomeCategoryChips extends StatelessWidget {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
           final category = categories[index];
           return _HomeChip(
@@ -524,9 +524,8 @@ class _HomeChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: Ink(
           decoration: BoxDecoration(
-            color: AppColors.chipFill,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.glassBorder),
+            border: Border.all(color: AppColors.glassBorder.withValues(alpha: 0.1)),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Text(
