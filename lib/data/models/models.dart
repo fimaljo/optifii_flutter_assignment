@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 class Category {
   const Category({
     required this.id,
@@ -15,6 +17,7 @@ class Brand {
     required this.id,
     required this.name,
     required this.categoryId,
+    required this.brandColor,
     required this.discountPercent,
     required this.startingPrice,
     required this.validityMonths,
@@ -29,6 +32,7 @@ class Brand {
   final String id;
   final String name;
   final String categoryId;
+  final Color brandColor;
   final double discountPercent;
   final double startingPrice;
   final int validityMonths;

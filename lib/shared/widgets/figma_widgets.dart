@@ -63,9 +63,8 @@ class DarkScaffold extends StatelessWidget {
     );
   }
 }
-
-class FigmaSearchField extends StatelessWidget {
-  const FigmaSearchField({
+class SearchFieldWidget extends StatelessWidget {
+  const SearchFieldWidget({
     super.key,
     required this.hintText,
     this.controller,
@@ -91,18 +90,25 @@ class FigmaSearchField extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.glassFill,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: AppColors.glassBorder),
+        border: Border.all(
+          color: AppColors.glassBorder,
+        ),
       ),
       child: Row(
         children: [
           if (onBack != null)
             IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary, size: 22),
               onPressed: onBack,
               splashRadius: 22,
+              icon: const Icon(
+                Icons.arrow_back,
+                color: AppColors.textPrimary,
+                size: 22,
+              ),
             )
           else
-            const SizedBox(width: 8),
+            const SizedBox(width: 16),
+
           Expanded(
             child: TextField(
               controller: controller,
@@ -110,30 +116,46 @@ class FigmaSearchField extends StatelessWidget {
               autofocus: autofocus,
               onTap: onTap,
               onChanged: onChanged,
-              style: const TextStyle(color: AppColors.textPrimary, fontSize: 15),
+              cursorColor: AppColors.textPrimary,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 15,
+              ),
               decoration: InputDecoration(
                 hintText: hintText,
-                hintStyle: const TextStyle(color: AppColors.textHint, fontSize: 15),
+                hintStyle: const TextStyle(
+                  color: AppColors.textHint,
+                  fontSize: 15,
+                ),
+                filled: false,
+                fillColor: Colors.transparent,
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
+                disabledBorder: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                ),
                 isDense: true,
               ),
             ),
           ),
+
           const Padding(
             padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.search, color: AppColors.textHint, size: 22),
+            child: Icon(
+              Icons.search,
+              color: AppColors.textHint,
+              size: 22,
+            ),
           ),
         ],
       ),
     );
   }
 }
-
-class FigmaFilterChip extends StatelessWidget {
-  const FigmaFilterChip({
+class FilterChipWidget extends StatelessWidget {
+  const FilterChipWidget({
     super.key,
     required this.label,
     this.onTap,
@@ -336,7 +358,7 @@ class CategoryChipRow extends StatelessWidget {
       runSpacing: 10,
       children: categories.map((category) {
         final selected = selectedId == category.id;
-        return FigmaFilterChip(
+        return FilterChipWidget(
           label: category.name,
           selected: selected,
           onTap: () => onSelected(selected ? null : category.id),

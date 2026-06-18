@@ -26,7 +26,7 @@ class RewardsMarketplacePage extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
-              child: FigmaSearchField(
+              child: SearchFieldWidget(
                 hintText: 'Search Brands/ Categories',
                 readOnly: true,
                 onTap: () => context.push('/search'),
